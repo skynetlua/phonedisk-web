@@ -15,9 +15,6 @@ return function(params)
 	app.set("static_url", "/")
 	app.set("views_path", view_path)
 
-	-- local layout = io.joinpath(view_path, "layout.html")
-	-- app.set("layout", layout)
-
 	if params.domain then
 		app.set("host", params.domain)
 	end
