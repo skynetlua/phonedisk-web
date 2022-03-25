@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <!-- meta -->
+    <meta charset="utf-8" />
+    <meta name='description' content='<%- config.description %>' />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="<%- config.keywords %>"/>
+    <meta name="referrer" content="always" />
+    <% 
+        if config.site_headers then
+            for _,header in ipairs(config.site_headers) do
+                echo(header)
+            end
+        end
+    %>
+	<% if config.site_icon then %>
+    <link rel="icon" href="<%- static_file(config.site_icon) %>" type="image/x-icon"/>
+    <% end %>
+    <title><%- config.description %> - <%- config.name %></title>
+    <meta content="_csrf" name="csrf-param" />
+</head>
+<body>
+    <div style="width: 100%;">
+        <h1>手机盘-web框架（phonedisk-web）</h1>
+    </div>
+    <div style="display: flex;width: 100%;">
+        <div>
+            <a href="/index.html">首页</a>
+        </div>
+        <div style="margin-left: 20px;">
+            <a href="/about.html">关于</a>
+        </div>
+    </div>
+    <div class="main" style="height: 300px;">
+        <%- body %>
+    </div>
+    <div>
+        <span>源码地址:</span>
+        <ul style="display: inline-block;margin: 0;padding: 0;">
+          <li style="display: inline-block;"><a target="_blank" href="">Github开源地址</a></li>
+          <li style="display: inline-block;"><a target="_blank" href="https://gitee.com/linyouhappy/phonedisk-web">Gitee开源地址</a></li>
+        </ul>
+        <p>手机盘系列产品：《手机盘-文件管理》《手机盘-web》《手机盘-文档》《手机盘-项目管理》</p>
+        <p>QQ群：<a href="https://jq.qq.com/?_wv=1027&k=bM16rGyI" target="_blank">963944097</a></p>
+        <p>©2019 skynetlua开源社区. All by <a href="https://github.com/skynetlua" target="_blank">linyouhappy</a></p>
+    </div>
+</body>
+</html>

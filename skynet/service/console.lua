@@ -15,11 +15,6 @@ local function console_main_loop()
 		skynet.error("windows OS not support console")
 		return
 	end
-	if LUA_OS == "android" then
-		skynet.error("android OS not support console")
-		return
-	end
-
 	local stdin = socket.stdin()
 	while true do
 		local cmdline = socket.readline(stdin, "\n")
