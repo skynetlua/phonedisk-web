@@ -14,12 +14,12 @@ local static_path = config.static_path or "./assets/static/"
 local exports = {}
 
 function exports.static_file(filePath)
-    if filePath:find('http') == 1 or filePath:find('//') == 1 then
+    if filePath:find('http', 1, true) == 1 or filePath:find('https', 1, true) == 1 or filePath:find('//', 1, true) == 1 then
         return filePath
     end
     local file_md5 = filed.file_md5(io.joinpath(static_path, filePath))
     if file_md5 then
-        if filePath:find('?') then
+        if filePath:find('?', 1, true) then
             filePath = filePath .. "&fv=" .. file_md5
         else
             filePath = filePath .. "?fv=" .. file_md5
@@ -30,7 +30,7 @@ function exports.static_file(filePath)
     if #static_host == 0 then
         return filePath
     end
-    return static_host .. filePath
+    return io.joinpath(static_host, filePath)
 end
 
 function exports.Loader(js, css)

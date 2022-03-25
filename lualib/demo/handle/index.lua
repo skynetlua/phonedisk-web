@@ -30,7 +30,10 @@ router.get('ping', function(req, res)
 end)
 
 router.get('/', function(req, res)
-	return res.redirect("http://" .. config.domain .. "/index.html")
+	-- local app = req.app
+	-- local domain = app.get("host") or "127.0.0.1"
+	-- log("domain =", domain)
+	return res.redirect("/index.html")
 end)
 
 ------------------------------------------

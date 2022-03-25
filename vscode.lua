@@ -29,7 +29,7 @@ local app = web(config)
 local req = {
     protocol = 'http',
     method   = "get",
-    url      = "/topic/like/2.html?content=点赞文章",
+    url      = "/index.html",
     header   = {},
     body     = "",
 }
