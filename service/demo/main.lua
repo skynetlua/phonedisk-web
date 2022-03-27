@@ -1,5 +1,5 @@
 local skynet = require "skynet.manager"
-local filed = require "meiru.lib.filed"
+local filed = require "meiru.server.filed"
 
 skynet.start(function()
     filed.init()
