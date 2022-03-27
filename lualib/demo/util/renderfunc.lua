@@ -1,6 +1,5 @@
 
-local filed = require "meiru.lib.filed"
-
+local filed = require "meiru.server.filed"
 local config = include "config"
 
 local table = table
@@ -17,7 +16,7 @@ function exports.static_file(filePath)
     if filePath:find('http', 1, true) == 1 or filePath:find('https', 1, true) == 1 or filePath:find('//', 1, true) == 1 then
         return filePath
     end
-    local file_md5 = filed.file_md5(io.joinpath(static_path, filePath))
+    local file_md5 = filed.file_md5(path.joinpath(static_path, filePath))
     if file_md5 then
         if filePath:find('?', 1, true) then
             filePath = filePath .. "&fv=" .. file_md5
@@ -30,16 +29,16 @@ function exports.static_file(filePath)
     if #static_host == 0 then
         return filePath
     end
-    return io.joinpath(static_host, filePath)
+    return path.joinpath(static_host, filePath)
 end
 
 function exports.Loader(js, css)
     local target = {}
     if js then
-        target[io.extname(js)] = js
+        target[path.extname(js)] = js
     end
     if css then
-        target[io.extname(css)] = css
+        target[path.extname(css)] = css
     end
 
     local self = {}

@@ -30,34 +30,7 @@ router.get('ping', function(req, res)
 end)
 
 router.get('/', function(req, res)
-	-- local app = req.app
-	-- local domain = app.get("host") or "127.0.0.1"
-	-- log("domain =", domain)
 	return res.redirect("/index.html")
 end)
 
-------------------------------------------
-------------------------------------------
-router.bind("get", "test1_html", function(req, res)
-	log("test bind /test1.html")
-	return res.send(200, "/test1.html")
-end)
-
-------------------------------------------
-------------------------------------------
-local model = {
-	get = {
-		test2_html = function(req, res)
-			log("test bind /test2.html")
-			return res.send(200, "/test2.html")
-		end
-	}
-}
-
-router.bind_model(model)
-
-local node = router.node()
-node:set_path("/")
-
-
-return node
+return router
