@@ -1,20 +1,8 @@
 local Com = require "meiru.com.com"
 local platform = require "meiru.util.platform"
-local filed = require "meiru.lib.filed"
+local filed = require "meiru.server.filed"
 
 local string = string
-
-
-local _Imaged
-local function getToken2Path(token)
-    if not _Imaged then
-        _Imaged = require "meiru.lib.imaged"
-    end
-    if type(token) ~= "string" or #token < 1 then
-        return
-    end
-    return _Imaged.get_path(token)
-end
 
 ----------------------------------------------
 --ComStatic
@@ -40,15 +28,7 @@ function ComStatic:get_full_path(path)
 	if not self.static_dir then
 		self:find_static_dir()
 	end
-	-- local dir_path = self._node:get_path()
-	-- local len = #dir_path
-	-- local head = string.sub(path, 1, len)
-	-- if head ~= dir_path then
-	-- 	return
-	-- end
-	-- path = string.sub(path, len+1)
-	local file_path = io.joinpath(self.static_dir, path)
-	-- log(file_path)
+	local file_path = path.joinpath(self.static_dir, path)
 	if not io.exists(file_path) then
 		return
 	end
@@ -56,20 +36,7 @@ function ComStatic:get_full_path(path)
 end
 
 function ComStatic:match(req, res)
-	local token = req.params and req.params["token"]
-	-- log("ComStatic token =", token)
-	local fullpath
-	if token then
-		-- local uid = req.query["uid"]
-		fullpath = getToken2Path(token)
-		if not fullpath then
-			return
-		end
-		fullpath = self:get_full_path(fullpath)
-	else
-		fullpath = self:get_full_path(req.path)
-	end
-	-- fullpath = self:get_full_path(req.path)
+	local fullpath = self:get_full_path(req.path)
 	if not fullpath then
 		return
 	end
@@ -110,7 +77,7 @@ function ComStatic:match(req, res)
 		return false
 	end
 
-	res.set_type(io.extname(fullpath))
+	res.set_type(path.extname(fullpath))
 	res.set_header('ETag', file_md5)
 	local modify_time = platform.file_modify_time(fullpath)
 	res.set_header('Last-Modified', os.gmtdate(modify_time))

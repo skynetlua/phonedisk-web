@@ -1,7 +1,7 @@
 
 local Com = require "meiru.com.com"
 local url = require "meiru.util.url"
-local systemd = require "meiru.lib.systemd"
+local systemd = require "meiru.server.systemd"
 
 local sfind = string.find
 ----------------------------------------------

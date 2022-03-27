@@ -517,16 +517,4 @@ load_desc_tables = function(db, db_name)
     -- skynet.log("2table_descs =", table_descs)
 end
 
--- skynet.start(function()
---     init()
--- 	skynet.dispatch("lua", function(_,_,cmd,...)
---         local f = command[cmd]
---         if f then
---             skynet.ret(skynet.pack(f(...)))
---         else
---             assert(false, "error no support cmd"..cmd)
---         end
---     end)
--- end)
-
 server(command, init, ...)

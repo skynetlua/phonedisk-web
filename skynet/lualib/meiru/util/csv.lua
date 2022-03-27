@@ -6,27 +6,6 @@
 
 local csv = {}
 
--- local function getExcelFiles(excelDir)
---     local excelFiles = {}
---     if lfs then
---         for file in lfs.dir(excelDir) do
---             if io.extname(file) == ".csv" then
---                 table.insert(excelFiles, file)
---             end
---         end
---     else
---         local files = io.dir(excelDir)
---         for _,file in ipairs(files) do
---             if not file.isdir then
---                 if io.extname(file.name) == ".csv" then
---                     table.insert(excelFiles, file.name)
---                 end
---             end
---         end
---     end
---     return excelFiles
--- end
-
 local sbyte = string.byte
 local ssub = string.sub
 local sfind = string.find

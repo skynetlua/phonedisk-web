@@ -12,8 +12,10 @@ local db_config = {
 }
 
 local target_db = mysql_config.database
+local model_path = mysql_config.model_path
+local sql_file = mysql_config.sql_file
+
 local check_db = "mycheck"
-local sql_file = mysql_file
 local _table_infos
 
 local function exist_file(file_path)
@@ -47,7 +49,7 @@ end
 
 
 local modelTemplate = [[
-local Model = require "meiru.db.model"
+local Model = require "meiru.lib.model"
 
 ------------------------
 %s
@@ -62,27 +64,35 @@ return %s
 ]]
 
 local function convert(name)
-    local items = string.split(name, "_")
-    table.remove(items, 1)
-    local file_name = table.concat(items, "_")
-    for i,v in ipairs(items) do
-        items[i] = string.upper(v:sub(1, 1)) .. v:sub(2)
-    end
-    local model_name = table.concat(items)
+    local file_name = string.lower(name)
+    local model_name = string.upper(name:sub(1, 1)) .. name:sub(2)
     return file_name, model_name
+    -- local items = string.split(name, "_")
+    -- table.remove(items, 1)
+    -- local file_name = table.concat(items, "_")
+    -- for i,v in ipairs(items) do
+    --     items[i] = string.upper(v:sub(1, 1)) .. v:sub(2)
+    -- end
+    -- local model_name = table.concat(items)
+    -- return file_name, model_name
 end
 
 local function create_models(tableblocks)
-    local model_path = skynet.getenv("model_path")
+    if not _table_infos then
+        return
+    end
+    -- log("_table_infos =", _table_infos)
     for name,tableblock in pairs(tableblocks) do
-        -- log("table_info =", table_info)
-        local file_name, model_name = convert(string.lower(name))
+        log("create_models: name =", name)
+        local file_name, model_name = convert(name)
+        -- log("create_models file_name =", file_name, "model_name =", model_name)
         if file_name and #file_name > 0 then
-            local model_file = string.format("%s/%s.lua", model_path, string.lower(file_name))
+            local model_file = path.joinpath(model_path, file_name ..".lua")
+            -- log("create model model_file:", model_file)
             if not exist_file(model_file) then
                 log("create model:", model_file)
                 local fields = {}
-                local table_info = _table_infos[name]
+                local table_info = _table_infos[string.lower(name)]
                 for _,v in pairs(table_info) do
                     table.insert(fields, "--" .. v.Type .. " " .. v.Field)
                 end
@@ -97,16 +107,16 @@ end
 
 local tableblocks = {}
 local function load_sql()
-    skynet.log("load_sql sql_file =", sql_file)
+    skynet.error("load_sql sql_file =", sql_file)
     local slqtxt = read_file(sql_file)
     local seartidx = 1
     while true do
-        local startidx = string.find(slqtxt, "DROP TABLE", seartidx)
+        local startidx = string.find(slqtxt, "DROP TABLE", seartidx, true)
         if not startidx then
             break
         end
         seartidx = startidx+1
-        local endidx = string.find(slqtxt, ";", seartidx)
+        local endidx = string.find(slqtxt, ";", seartidx, true)
         if not endidx then
             break
         end
@@ -114,23 +124,23 @@ local function load_sql()
 
         local drop_block = string.sub(slqtxt, startidx, endidx)
         local table_name = string.match(drop_block,"`([^`]+)`")
-        skynet.log("load_sql table_name =", table_name)
+        skynet.error("load_sql table_name =", table_name)
         ------------------------------
-        local startidx = string.find(slqtxt, "CREATE TABLE", seartidx)
+        local startidx = string.find(slqtxt, "CREATE TABLE", seartidx, true)
         if not startidx then
             break
         end
         seartidx = startidx+1
-        local endidx = string.find(slqtxt, ";", seartidx)
+        local endidx = string.find(slqtxt, ";", seartidx, true)
         if not endidx then
             break
         end
         seartidx = endidx+1
 
         local create_block = string.sub(slqtxt, startidx, endidx)
-        -- skynet.log("load_sql create_block =", create_block)
+        -- log("load_sql create_block =", create_block)
         assert(table_name == string.match(create_block,"`([^`]+)`"), table_name)
-        assert(not tableblocks[table_name], tableblocks)
+        -- assert(not tableblocks[table_name], tableblocks)
         local tableblock = {
             table_name = table_name,
             drop_block = drop_block,
@@ -189,6 +199,7 @@ end
 local function create_tables(db, db_name, create_rules)
     use_db(db, db_name)
     for _,create_rule in pairs(create_rules) do
+        -- log("create_rule =", create_rule)
         local sql = create_rule.drop_block
         local retval = db:query(sql)
         check_error(retval,sql)
@@ -223,7 +234,7 @@ local function desc_tables(db, db_name)
             local sql = string.format("desc `%s`;",table_name)
             local retval = db:query(sql)
             check_error(retval,sql)
-            table_descs[table_name] = retval
+            table_descs[string.lower(table_name)] = retval
         end
     end
     return table_descs
@@ -232,6 +243,7 @@ end
 --opt-----------------------------------
 local function create_mysql(db, db_name)
     create_db(db, db_name)
+    -- log("create_mysql tableblocks =", tableblocks)
     create_tables(db, db_name, tableblocks)
 end
 
@@ -241,14 +253,17 @@ local function change_mysql(db, tdb_name, cdb_name)
     end
     create_mysql(db, cdb_name)
     local ctable_infos = desc_tables(db, cdb_name)
-    -- skynet.log("ctable_infos =", ctable_infos)
     -- drop_db(db, cdb_name)
     local ttable_infos = desc_tables(db, tdb_name)
+    -- log("ctable_infos =", ctable_infos)
+    -- log("ttable_infos =", ctable_infos)
+
     local new_tableblocks = {}
     local table_name, ctable_info, ttable_info, ctable_infomap, cfield, tfield
     for _,tableblock in pairs(tableblocks) do
         table_name = tableblock.table_name
-        skynet.log("check table: table_name =", table_name)
+        table_name = string.lower(table_name)
+        skynet.error("check table: table_name =", table_name)
 
         ctable_info = ctable_infos[table_name]
         assert(ctable_info, "no create table:"..table_name)
@@ -299,7 +314,8 @@ local function change_mysql(db, tdb_name, cdb_name)
         skynet.error("need delete table:", table_name)
         table.insert(remove_tablenames,table_name)
     end
-     do return end
+    log("new_tableblocks =", new_tableblocks)
+    do return end
 
     --重新创建表格
     create_tables(db, tdb_name, new_tableblocks)
@@ -309,10 +325,10 @@ local function change_mysql(db, tdb_name, cdb_name)
 end
 
 local function chech_mysql()
-    skynet.log("chech_mysql db_config =", db_config)
+    log("chech_mysql db_config =", db_config)
     local db = mysql.connect(db_config)
     assert(db, "failed to connect mysql")
-    skynet.error("testmysql success to connect to mysql server")
+    skynet.error("success to connect to mysql server")
     if is_exist_db(db, target_db) then
         skynet.error("database is exist:", target_db)
         change_mysql(db, target_db, check_db)
@@ -329,6 +345,8 @@ end
 
 local command = {}
 function command.start()
+
+    load_sql()
     chech_mysql()
     load_sql()
 

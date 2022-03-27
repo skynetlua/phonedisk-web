@@ -1,6 +1,6 @@
 local Com = require "meiru.com.com"
 local Render = require "meiru.util.render"
-local filed  = require "meiru.lib.filed"
+local filed  = require "meiru.server.filed"
 local Coder = require "meiru.util.coder"
 local json  = Coder("json")
 

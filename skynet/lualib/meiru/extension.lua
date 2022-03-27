@@ -315,28 +315,11 @@ function os.excute_cmd(cmd)
     return ret
 end
 
--------------------------------------------
---io
---------------------------------------------
-local ok, lfs = pcall(require, "lfs")
-lfs = ok and lfs
-function io.exists(path)
-    if lfs then
-        local attr = lfs.attributes(path)
-        if attr then
-            return true
-        end
-        return false
-    end
-    local file = io.open(path, "r")
-    if file then
-        io.close(file)
-        return true
-    end
-    return false
-end
-
-function io.joinpath(dirpath, ...)
+---------------------------------------------
+--path
+---------------------------------------------
+path = {}
+function path.joinpath(dirpath, ...)
     local len = select('#', ...)
     local part, v
     local ret = dirpath
@@ -362,29 +345,40 @@ function io.joinpath(dirpath, ...)
     return ret
 end
 
-function io.readfile(path)
-    local file = io.open(path, "rb")
-    if file then
-        local content = file:read("*a")
-        io.close(file)
-        return content
+function path.dirname(path)
+    local pos = #path
+    while pos > 0 do
+        if path:byte(pos) == 47 then
+            break
+        end
+        pos = pos - 1
     end
-    return nil
+    return path:sub(1, pos)
 end
 
-function io.writefile(path, content, mode)
-    mode = mode or "wb"
-    local file = io.open(path, mode)
-    if file then
-        if file:write(content) == nil then return false end
-        io.close(file)
-        return true
-    else
-        return false
+function path.filename(path)
+    local pos = #path
+    while pos > 0 do
+        if path:byte(pos) == 47 then
+            break
+        end
+        pos = pos - 1
+    end
+    return path:sub(pos + 1)
+end
+
+function path.extname(path)
+    for i=#(path),1,-1 do
+         local b = path:byte(i)
+         if b == 46 then -- 46 = char "."
+            return path:sub(i, #path)
+        elseif b == 47 then -- 47 = char "/"
+            return
+        end
     end
 end
 
-function io.pathinfo(path)
+function path.pathinfo(path)
     local pos = #path
     local extpos = pos + 1
     while pos > 0 do
@@ -409,36 +403,46 @@ function io.pathinfo(path)
     }
 end
 
-function io.dirname(path)
-    local pos = #path
-    while pos > 0 do
-        if path:byte(pos) == 47 then
-            break
+-------------------------------------------
+--io
+--------------------------------------------
+local ok, lfs = pcall(require, "lfs")
+lfs = ok and lfs
+function io.exists(path)
+    if lfs then
+        local attr = lfs.attributes(path)
+        if attr then
+            return true
         end
-        pos = pos - 1
+        return false
     end
-    return path:sub(1, pos)
+    local file = io.open(path, "r")
+    if file then
+        io.close(file)
+        return true
+    end
+    return false
 end
 
-function io.filename(path)
-    local pos = #path
-    while pos > 0 do
-        if path:byte(pos) == 47 then
-            break
-        end
-        pos = pos - 1
+function io.readfile(path)
+    local file = io.open(path, "rb")
+    if file then
+        local content = file:read("*a")
+        io.close(file)
+        return content
     end
-    return path:sub(pos + 1)
+    return nil
 end
 
-function io.extname(path)
-    for i=#(path),1,-1 do
-         local b = path:byte(i)
-         if b == 46 then -- 46 = char "."
-            return path:sub(i, #path)
-        elseif b == 47 then -- 47 = char "/"
-            return
-        end
+function io.writefile(path, content, mode)
+    mode = mode or "wb"
+    local file = io.open(path, mode)
+    if file then
+        if file:write(content) == nil then return false end
+        io.close(file)
+        return true
+    else
+        return false
     end
 end
 
@@ -481,7 +485,7 @@ function io.dir(path)
         if ok then
             for file in lfs.dir(path) do
                 if file ~= "." and file ~= ".." then
-                    local attr = lfs.attributes(io.joinpath(path, file))
+                    local attr = lfs.attributes(path.joinpath(path, file))
                     -- log("file =", file, attr)
                     if attr.mode == "directory" then
                         retval = {name = file, isdir = true}
@@ -773,18 +777,18 @@ end
 
 function include_assets_path(file_part)
     local project_name = include_project_name(3)
-    local ret_path  = io.joinpath(ROOT_PATH, "assets", project_name)
+    local ret_path  = path.joinpath(ROOT_PATH, "assets", project_name)
     if file_part then
-        ret_path  = io.joinpath(ret_path, file_part)
+        ret_path  = path.joinpath(ret_path, file_part)
     end
     return ret_path
 end
 
 function include_data_path(file_part)
     local project_name = include_project_name(3)
-    local ret_path  = io.joinpath(ROOT_PATH, "data", project_name)
+    local ret_path  = path.joinpath(ROOT_PATH, "data", project_name)
     if file_part then
-        ret_path  = io.joinpath(ret_path, file_part)
+        ret_path  = path.joinpath(ret_path, file_part)
     end
     return ret_path
 end

@@ -86,6 +86,10 @@ end
 
 local function add_handle(router, method_name, path_name, handle)
     local methods = router.__methods
+    if not methods then
+        methods = {}
+        router.__methods = methods
+    end
     local method = methods[method_name]
     if not method then
         method = {}
@@ -97,16 +101,19 @@ local function add_handle(router, method_name, path_name, handle)
     method[path_name] = true
 
     local route_rule = {""}
+    local idx, tmp
 
     local coms = router.__coms
-    local idx, tmp
-    for com_name,com in pairs(coms) do
-        idx = path_name:find(com_name, 1, true)
-        if idx then
-            route_rule[#route_rule+1] = com
-            path_name = path_name:sub(1, idx-1) .. path_name:sub(idx+#com_name)
+    if coms then
+        for com_name,com in pairs(coms) do
+            idx = path_name:find(com_name, 1, true)
+            if idx then
+                route_rule[#route_rule+1] = com
+                path_name = path_name:sub(1, idx-1) .. path_name:sub(idx+#com_name)
+            end
         end
     end
+
     idx = path_name:find("__", 1, true)
     if idx then
         tmp = path_name:find("_", idx+2, true)
@@ -129,6 +136,10 @@ end
 
 local function add_model(router, model)
     local methods = router.__methods
+    if not methods then
+        methods = {}
+        router.__methods = methods
+    end
     for method_name, handles in pairs(model) do
         local method = methods[method_name]
         if not method then
@@ -157,52 +168,6 @@ local function load_new_router(router, params)
         model = require(model_path)
         add_model(router, model)
     end
-
-    -- local idx, route_rule, url, tmp
-    -- for _,model_name in ipairs(params.models) do
-    --     model_path = route_dir .. "." .. model_name
-    --     model = require(model_path)
-    --     for method_name, handles in pairs(model) do
-    --         local method = methods[method_name]
-    --         if not method then
-    --             method = {}
-    --             methods[method_name] = method
-    --         end
-    --         for path_name, handle in pairs(handles) do
-    --             if method[path_name] then
-    --                 assert(false, "repeat path_name:" .. path_name)
-    --             end
-    --             method[path_name] = handle
-
-    --             route_rule = {""}
-    --             for com_name,com in pairs(coms) do
-    --                 idx = path_name:find(com_name, 1, true)
-    --                 if idx then
-    --                     route_rule[#route_rule+1] = com
-    --                     path_name = path_name:sub(1, idx-1) .. path_name:sub(idx+#com_name)
-    --                 end
-    --             end
-    --             idx = path_name:find("__", 1, true)
-    --             if idx then
-    --                 tmp = path_name:find("_", idx+2, true)
-    --                 if tmp then
-    --                     path_name = path_name:sub(1, idx) .. ":" .. path_name:sub(idx+2, tmp-1) .. path_name:sub(tmp)
-    --                 else
-    --                     path_name = path_name:sub(1, idx) .. ":" .. path_name:sub(idx+2)
-    --                 end
-    --             end
-
-    --             idx = path_name:find("_html", 1, true)
-    --             if idx and idx+4 == #path_name then
-    --                 path_name = path_name:sub(1, idx-1) .. ".html"
-    --             end
-    --             path_name = path_name:gsub("_", "/")
-    --             route_rule[1] = "/" .. path_name
-    --             route_rule[#route_rule+1] = handle
-    --             router[method_name](table.unpack(route_rule))
-    --         end
-    --     end
-    -- end
 end
 
 local function create_router(name, params)

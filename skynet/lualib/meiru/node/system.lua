@@ -43,7 +43,7 @@ local function testIp(ip)
 end
 
 ------------------------------------------
-local systemd = require "meiru.lib.systemd"
+local systemd = require "meiru.server.systemd"
 
 local cmds = {
 	["network"] = function(req, res, page, limit)
