@@ -41,6 +41,7 @@ function ComRender:match(req, res)
 
 		local ok, body = render(res.__path, data)
         if not ok then
+            log("res.__path =", res.__path, "data =", data)
             req.app.__render_error = body
             assert(false)
             return false
