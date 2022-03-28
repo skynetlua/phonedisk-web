@@ -5,30 +5,30 @@ phonedisk web framework
 直接下载项目
 
 ### windows环境
-鼠标点击运行客户端程序/bin/phonedisk-web-wain32/phonedisk.exe
-选择工程路径phonedisk-web的这个目录
-点击启动按钮，即可运行demo
+1. 鼠标点击运行客户端程序/bin/phonedisk-web-wain32/phonedisk.exe
+2. 手机盘-web程序上，选择工程路径phonedisk-web的这个目录
+3. 点击启动按钮，即可运行demo
 
 ### Android环境
 没错，支持运行安卓系统
-安装apk安装包/bin/phonedisk-web-android.apk
-把phonedisk-web项目拷贝到手机的sd卡内存。
-启动APP,选择工程路径phonedisk-web的这个目录
-点击启动按钮，即可运行demo
+1. 安装apk安装包/bin/phonedisk-web-android.apk
+2. 把phonedisk-web项目拷贝到手机的sd卡内存。
+3. 启动APP,选择工程路径phonedisk-web的这个目录
+4. 点击启动按钮，即可运行demo
 
 ### Linux环境
 shell终端
-cd phonedisk-web/skynet
-执行编译命令: make linux
-确保shell终端当前路径：cd phonedisk-web/
-运行 ./skynet/skynet ./config/demo.config
+1. cd phonedisk-web/skynet
+2. 执行编译命令: make linux
+3. 确保shell终端当前路径：cd phonedisk-web/
+4. 运行 ./skynet/skynet ./config/demo.config
 
 ### Mac环境
 shell终端
-cd phonedisk-web/skynet
-执行编译命令: make macosx
-确保shell终端当前路径：cd phonedisk-web/
-运行 ./skynet/skynet ./config/demo.config
+1. cd phonedisk-web/skynet
+2. 执行编译命令: make macosx
+3. 确保shell终端当前路径：cd phonedisk-web/
+4. 运行 ./skynet/skynet ./config/demo.config
 
 Mac客户端暂时不发布
 
