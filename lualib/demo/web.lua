@@ -15,12 +15,12 @@ return function(params)
 	app.data("config", config)
 	app.set("static_url", "/")
 	app.set("views_path", view_path)
-	if params.domain then
-		app.set("host", params.domain)
-	end
+	-- if params.domain then
+	-- 	app.set("host", params.domain)
+	-- end
 	--配置组件
 	app.use(app.new("ComInit"))
-	app.use(app.new("ComCors"))
+	-- app.use(app.new("ComCors"))
 	app.use(app.new("ComPath"))
 	app.use(app.new("ComHeader"))
 	app.use(app.new("ComBody"))
