@@ -8,7 +8,6 @@
   "keywords": ["手机盘-web", "phonedisk-web", "skynet", "skynet-web"],
   "gitee": "https://gitee.com/linyouhappy/phonedisk-web",
   "configs": {
-    "demo": "config/demo.config",
-    "forum": "config/forum.config"
+    "demo": "config/demo.config"
   }
 }
