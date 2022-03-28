@@ -3,15 +3,16 @@ phonedisk web framework
 
 ## 运行demo
 直接下载项目
+注意：phonedisk-web/表示本开源项目目录
 
 ### windows环境
-1. 鼠标点击运行客户端程序/bin/phonedisk-web-wain32/phonedisk.exe
+1. 鼠标点击运行客户端程序phonedisk-web/bin/phonedisk-web-wain32/phonedisk.exe
 2. 手机盘-web程序上，选择工程路径phonedisk-web的这个目录
 3. 点击启动按钮，即可运行demo
 
 ### Android环境
 没错，支持运行安卓系统
-1. 安装apk安装包/bin/phonedisk-web-android.apk
+1. 安装apk安装包phonedisk-web/bin/phonedisk-web-android.apk
 2. 把phonedisk-web项目拷贝到手机的sd卡内存。
 3. 启动APP,选择工程路径phonedisk-web的这个目录
 4. 点击启动按钮，即可运行demo
