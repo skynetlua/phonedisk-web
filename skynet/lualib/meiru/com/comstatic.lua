@@ -24,11 +24,11 @@ function ComStatic:find_static_dir()
     self.static_dir = static_dir
 end
 
-function ComStatic:get_full_path(path)
+function ComStatic:get_full_path(path_name)
 	if not self.static_dir then
 		self:find_static_dir()
 	end
-	local file_path = path.joinpath(self.static_dir, path)
+	local file_path = path.joinpath(self.static_dir, path_name)
 	if not io.exists(file_path) then
 		return
 	end
