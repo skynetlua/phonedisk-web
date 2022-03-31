@@ -39,6 +39,10 @@ Mac客户端暂时不发布
 
 浏览器预览：http://localhost:8080/
 
+
+确保：app.system()
+访问简单控制台: http://localhost:8080/system/index?token=oCHWR4lrP4uuiWqs8XG7v5iHIPGEoCHWR4lrP4uuiWqs8XG7v5iHIPGE
+
 ## Demo
 
 ```lua
@@ -89,6 +93,7 @@ return function(params)
 	--静态资源
 	app.use(meiru.static('/', static_path))
 	--监控平台
+	--/system/index?token=oCHWR4lrP4uuiWqs8XG7v5iHIPGEoCHWR4lrP4uuiWqs8XG7v5iHIPGE
 	app.system()
 	--启动
 	app.run()
