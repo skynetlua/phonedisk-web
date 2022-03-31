@@ -12,6 +12,9 @@ function ComSystem:ctor()
 end
 
 function ComSystem:match(req, res)
+	if req.ip == "127.0.0.1" then
+		return
+	end
 	local token = req.query["token"]
 	if type(token) ~= "string" or #token < 10 then
 		return false
@@ -167,7 +170,7 @@ router.get('/system/index', function(req, res)
     return res.html('/system/index', {
     	url_path = "/system/index",
     	api_path = "/system/",
-        token = token,
+        token = token or '',
     	cur_tab = tab,
     	cur_item = item
     })

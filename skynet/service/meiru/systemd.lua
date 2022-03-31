@@ -57,26 +57,6 @@ local function get_serverds()
     return _serverds
 end
 
-local _cdn_ips
-local function get_cdn_ips()
-    if not _cdn_ips then
-        local excelFile = "./data/excel/ip.csv"
-        local content = io.readfile(excelFile)
-        assert(content, excelFile .. "no exist")
-        local items = string.split(content, "\n")
-        _cdn_ips = {}
-        for idx,item in ipairs(items) do
-            if idx > 0 then
-                if item and #item>0 then
-                    item = string.split(item, ",")
-                    _cdn_ips[item[1]] = true
-                end
-            end
-        end
-    end
-    return _cdn_ips
-end
-
 -------------------------------------------------
 --system
 -------------------------------------------------
@@ -267,22 +247,12 @@ function command.net_stat()
     return netstats
 end
 
-local _pay_ips = {
-    ["121.51.58.170"] = true,
-    ["121.51.58.175"] = true,
-    ["121.51.58.173"] = true,
-    ["101.226.103.16"] = true,
-    ["121.51.58.168"] = true,
-}
--- 42.193.5.156
-
 function command.client_stat()
     local ips = {}
     local clients = {}
     local ip2client = {}
     local id = 1
     local serverds = get_serverds()
-    local cdn_ips = get_cdn_ips()
     for _,serverd in ipairs(serverds) do
         local client_infos = skynet.call(serverd, "lua", "client_infos")
         for _,info in ipairs(client_infos) do
@@ -294,16 +264,10 @@ function command.client_stat()
             if ip then
                 ip2client[ip] = info
                 table.insert(ips, ip)
-                if cdn_ips[ip] then
-                    info.own = "CDN"
-                elseif _pay_ips[ip] then
-                    info.own = "PAY"
-                end
             end
             id = id+1
         end
     end
-
     -- local ip2regiond = get_ip2regiond()
     -- if ip2regiond then
     --     local ips2addrs = skynet.call(ip2regiond, "lua", "ip2region", ips)
