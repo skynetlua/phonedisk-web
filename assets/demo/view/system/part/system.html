@@ -1,0 +1,79 @@
+
+
+<div class="layui-body">
+    <div style="padding: 15px;">
+<!--        <strong><h3 id="stat_title"><%- cur_item_data[2] %>表格</h3></strong>
+ -->        <div id="main" style="height:400px"></div>
+    </div>
+</div>
+
+<div class="layui-footer">
+    © <a href="http://www.skynetlua.com">skynetlua</a> - 管理工具
+</div>
+
+<script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+
+<script type="text/javascript">
+    function showdata(datas) {
+        var myChart = echarts.init(document.getElementById('main'));
+        var option = {
+            title : {
+                text: '每3分钟记录系统CPU和内存使用率'
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['CPU使用率','内存使用率']
+            },
+            // calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    boundaryGap : false,
+                    data : datas[0]
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                {
+                    name:'CPU使用率',
+                    type:'line',
+                    smooth:true,
+                    itemStyle: {normal: {areaStyle: {type: 'default'}}},
+                    data:datas[1]
+                },
+                {
+                    name:'内存使用率',
+                    type:'line',
+                    smooth:true,
+                    itemStyle: {normal: {areaStyle: {type: 'default'}}},
+                    data:datas[2]
+                },
+            ]
+        };
+        myChart.setOption(option); 
+    }
+
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+            var retval = JSON.parse(xmlhttp.responseText)
+            var src_data = retval.data;
+            var datas = [[],[],[]];
+            for (var i = 0; i < src_data.length; i++) {
+                datas[0].push(src_data[i].time);
+                datas[1].push(src_data[i].cpu_usage.toFixed(4)*100);
+                datas[2].push(src_data[i].mem_usage.toFixed(4)*100);
+            }
+            showdata(datas);
+        }
+    }
+    xmlhttp.open("GET","<%- api_path .. cur_item %>?token=<%- token %>",true);
+    xmlhttp.send();
+
+</script>

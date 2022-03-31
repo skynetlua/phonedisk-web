@@ -1,0 +1,88 @@
+
+<div class="layui-body">
+    <div style="padding: 15px;">
+    	<strong><h3 id="stat_title"><%- cur_item_data[2] %>表格</h3></strong>
+    	<table id="main" lay-filter="test"></table>
+    </div>
+</div>
+
+<div class="layui-footer">
+    © <a href="http://www.skynetlua.com">skynetlua</a> - 管理工具
+</div>
+
+<script src="https://www.layuicdn.com/layui/layui.js"></script>
+<!-- <script>
+//JavaScript代码区域
+layui.use('element', function(){
+  // var element = layui.element;
+});
+</script> -->
+<script>
+
+//表结构
+var struct = [
+    {field: 'id', title: '序号ID', width: 80, sort: true},
+    {field: 'port', title: '端口', width: 80, sort: true},
+    {field: 'ip', title: '终端IP', width: 150},
+    {field: 'own', title: '类型', width: 80},
+    {field: 'address', title: 'IP归属地', width: 250, sort: true},
+    {field: 'slaveId',  title: '服务ID', width: 100, sort: true},
+    {field: 'visit_times',  title: '访问数', width: 100, sort: true},
+    {field: 'finish_times',  title: '完成数', width: 100, sort: true},
+    {field: 'last_visit_time', title: '最近访问', width: 220},
+    {field: 'max_stimes', title: '秒最大数', width: 100, sort: true},
+    {field: 'max_mtimes',   title: '分最大数', width: 100, sort: true},
+    {field: 'black', title: '拉黑', width: 80, sort: true},
+];
+
+layui.use('table', function(){
+ 	var table = layui.table;
+ 	table.render({
+    	elem: '#main',
+    	height: 600,
+    	url: '<%- api_path .. cur_item %>?token=<%- token %>', //数据接口
+    	// page: true, //开启分页
+    	cols: [struct],
+        parseData: function(res){
+            var cur_item = "<%- cur_item %>";
+            if (cur_item == "visit") {
+                var dom = document.getElementById("stat_title")
+                dom.innerHTML = "<%- cur_item_data[2] %>表格    "+"您的IP为:("+res.addr+" ["+res.region+"])";
+            }
+            return {
+              "code": res.code,
+              "msg": res.msg,
+              "count": res.count,
+              "data": res.data
+            };
+        }
+  	});
+    table.on('row(test)', function(obj){
+        // console.log(obj.tr) //得到当前行元素对象
+        // console.log(obj.data) //得到当前行数据
+        layer.prompt({
+            formType: 2,
+            value: "确定要拉黑IP："+obj.data.ip
+            // value: data.email
+        }, function(value, index){
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function(){
+                if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+                    var retval = JSON.parse(xmlhttp.responseText)
+                    var src_data = retval.data;
+                    var datas = [[],[],[]];
+                    for (var i = 0; i < src_data.length; i++) {
+                        datas[0].push(src_data[i].time);
+                        datas[1].push(src_data[i].cpu_usage.toFixed(4)*100);
+                        datas[2].push(src_data[i].mem_usage.toFixed(4)*100);
+                    }
+                    showdata(datas);
+                }
+            }
+            xmlhttp.open("GET","<%- api_path %>kick?token=<%- token %>&ip="+obj.data.ip,true);
+            xmlhttp.send();
+          layer.close(index);
+        });
+    });
+});
+</script>
